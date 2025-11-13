@@ -7,7 +7,7 @@ function Welcome({ navigateTo }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isLogin, setIsLogin] = useState(true); // true = логин, false = регистрация
+    const [isLogin, setIsLogin] = useState(true);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,11 +22,11 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
+            const serverUrl = 'http://31.31.196.6:3000'; // Твой сервер на reg.ru
 
-            console.log('🔄 Отправка запроса на:', endpoint);
+            console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
-            // Строка ~20:
-            const response = await fetch(`http://31.31.196.6:3000${endpoint}`, {
+            const response = await fetch(`${serverUrl}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -43,12 +43,9 @@ function Welcome({ navigateTo }) {
 
             if (data.success) {
                 console.log('✅ Успешная авторизация:', data.user);
-
-                // Сохраняем в localStorage
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
                 localStorage.setItem('isLoggedIn', 'true');
-
                 navigateTo('home');
             } else {
                 setError(data.error || 'Ошибка авторизации');
@@ -91,7 +88,6 @@ function Welcome({ navigateTo }) {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    console.log('🔄 Пытаюсь подключиться к:', `http://31.31.196.6:3000${endpoint}`);
                     <div style={{ marginBottom: '20px', textAlign: 'left' }}>
                         <label style={{
                             display: 'block',
@@ -116,8 +112,6 @@ function Welcome({ navigateTo }) {
                                 transition: 'border-color 0.3s',
                                 boxSizing: 'border-box'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#007cff'}
-                            onBlur={(e) => e.target.style.borderColor = '#e1e1e1'}
                             required
                         />
                     </div>
@@ -146,8 +140,6 @@ function Welcome({ navigateTo }) {
                                 transition: 'border-color 0.3s',
                                 boxSizing: 'border-box'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#007cff'}
-                            onBlur={(e) => e.target.style.borderColor = '#e1e1e1'}
                             required
                         />
                     </div>
@@ -183,14 +175,8 @@ function Welcome({ navigateTo }) {
                             transition: 'all 0.3s',
                             marginBottom: '20px'
                         }}
-                        onMouseOver={(e) => !isLoading && (e.target.style.background = '#0066cc')}
-                        onMouseOut={(e) => !isLoading && (e.target.style.background = '#007cff')}
                     >
-                        {isLoading ? (
-                            <span>⏳ Загрузка...</span>
-                        ) : (
-                            <span>{isLogin ? '🔐 Войти' : '🚀 Зарегистрироваться'}</span>
-                        )}
+                        {isLoading ? '⏳ Загрузка...' : '🔐 Войти'}
                     </button>
                 </form>
 
@@ -242,4 +228,3 @@ function Welcome({ navigateTo }) {
 }
 
 export default Welcome;
-
