@@ -22,7 +22,7 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            const serverUrl = 'http://31.31.196.6:3000'; // Твой сервер на reg.ru
+            const serverUrl = 'https://compiled-gas-bluetooth-appointment.trycloudflare.com'; // Твой сервер на reg.ru
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
