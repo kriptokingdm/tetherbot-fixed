@@ -30,7 +30,7 @@ function History({ navigateTo }) {
             const userId = userData.id; // ✅ Теперь userId определен
             console.log('🆔 User ID:', userId);
 
-            const response = await fetch(`https://development-targeted-large-nicole.trycloudflare.com/api/user-orders/${userId}`, {
+            const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/user-orders/${userId}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

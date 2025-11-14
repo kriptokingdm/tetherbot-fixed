@@ -4,7 +4,7 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 //  serverURL
-const serverUrl = 'https://development-targeted-large-nicole.trycloudflare.com';
+const serverUrl = 'https://offset-pays-real-seq.trycloudflare.com';
 // ......
 
 

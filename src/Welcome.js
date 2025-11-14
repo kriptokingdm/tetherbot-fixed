@@ -22,7 +22,7 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            const serverUrl = 'https://development-targeted-large-nicole.trycloudflare.com'; // Твой сервер на reg.ru
+            const serverUrl = 'https://offset-pays-real-seq.trycloudflare.com'; // Твой сервер на reg.ru
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
