@@ -22,7 +22,7 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            const serverUrl = 'https://offset-pays-real-seq.trycloudflare.com'; // НОВЫЙ URL
+            const serverUrl = 'https://tear-border-relate-roll.trycloudflare.com'; // НОВЫЙ URL
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 

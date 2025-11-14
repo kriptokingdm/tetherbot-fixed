@@ -30,7 +30,7 @@ function History({ navigateTo }) {
             const userId = userData.id;
             console.log('🆔 User ID:', userId);
     
-            const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/user-orders/${userId}`, {
+            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/user-orders/${userId}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

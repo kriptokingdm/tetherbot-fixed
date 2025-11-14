@@ -52,7 +52,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
                 return;
             }
 
-            const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/user-orders/${userData.id}`, {
+            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/user-orders/${userData.id}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -88,7 +88,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
                 return;
             }
 
-            const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/chat/messages/${userData.id}`, {
+            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/chat/messages/${userData.id}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -133,7 +133,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
         try {
             const userData = JSON.parse(localStorage.getItem('currentUser'));   
             
-            const response = await fetch('https://offset-pays-real-seq.trycloudflare.com/api/chat/send', {
+            const response = await fetch('https://tear-border-relate-roll.trycloudflare.com/api/chat/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
