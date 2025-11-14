@@ -17,19 +17,19 @@ function History({ navigateTo }) {
     const fetchUserOrders = async () => {
         try {
             console.log('🔄 Начинаем загрузку истории...');
-
-            const userData = JSON.parse(localStorage.getItem('userData'));
+    
+            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВЛЕНО
             console.log('👤 Данные пользователя:', userData);
-
+    
             if (!userData || !userData.id) {
                 setError('Не авторизован');
                 setIsLoading(false);
                 return;
             }
-
-            const userId = userData.id; // ✅ Теперь userId определен
+    
+            const userId = userData.id;
             console.log('🆔 User ID:', userId);
-
+    
             const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/user-orders/${userId}`, {
                 headers: {
                     'Content-Type': 'application/json'
