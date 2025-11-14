@@ -130,23 +130,23 @@ function Home({ navigateTo }) {
     // Функция проверки активных ордеров
     const checkActiveOrders = async () => {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.log('❌ Токен не найден');
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            if (!userData || !userData.id) {
+                console.log('❌ Данные пользователя не найдены');
                 return;
             }
-
+    
             console.log('🔍 Проверяем активные ордеры...');
             
-            const response = await fetch(`${serverUrl}/api/user/orders`, {
+            // ПРАВИЛЬНЫЙ URL!
+            const response = await fetch(`${serverUrl}/api/user-orders/${userData.id}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-
+    
             console.log('📡 Статус ответа:', response.status);
-
+    
             if (response.ok) {
                 const data = await response.json();
                 console.log('📦 Данные ордеров:', data);
@@ -154,13 +154,13 @@ function Home({ navigateTo }) {
                 const activeOrders = data.orders.filter(order =>
                     order.status === 'pending' || order.status === 'paid' || order.status === 'processing'
                 );
-
+    
                 console.log('🔥 Активных ордеров:', activeOrders.length);
                 console.log('📋 Все ордеры:', data.orders.map(o => ({id: o.id, status: o.status})));
-
+    
                 setActiveOrdersCount(activeOrders.length);
                 setHasActiveOrder(activeOrders.length > 0);
-
+    
             } else {
                 console.error('❌ Ошибка ответа:', response.status);
             }
