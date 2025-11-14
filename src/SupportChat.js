@@ -45,7 +45,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
     const checkChatAvailability = async () => {
         try {
             const token = localStorage.getItem('token');
-            const userData = JSON.parse(localStorage.getItem('userData'));
+            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВИТЬ
             
             if (!userData || !userData.id) {
                 console.error('❌ Нет данных пользователя');
@@ -82,7 +82,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
     // Загрузка истории чата
     const loadChatHistory = async () => {
         try {
-            const userData = JSON.parse(localStorage.getItem('userData'));
+            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВИТЬ
             
             if (!userData || !userData.id) {
                 console.error('❌ Нет данных пользователя для загрузки чата');
