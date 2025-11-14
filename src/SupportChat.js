@@ -132,7 +132,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
         setIsLoading(true);
 
         try {
-            const userData = JSON.parse(localStorage.getItem('userData'));
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
             
             const response = await fetch('http://31.31.196.6:3000/api/chat/send', {
                 method: 'POST',
