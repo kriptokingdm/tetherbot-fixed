@@ -52,9 +52,8 @@ function SupportChat({ orderId, onClose, exchangeData }) {
                 return;
             }
 
-            const response = await fetch(`http://31.31.196.6:3000/api/user-orders/${userData.id}`, {
+            const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/user-orders/${userData.id}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -89,7 +88,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
                 return;
             }
 
-            const response = await fetch(`http://31.31.196.6:3000/api/chat/messages/${userData.id}`, {
+            const response = await fetch(`https://offset-pays-real-seq.trycloudflare.com/api/chat/messages/${userData.id}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -132,9 +131,9 @@ function SupportChat({ orderId, onClose, exchangeData }) {
         setIsLoading(true);
 
         try {
-            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            const userData = JSON.parse(localStorage.getItem('currentUser'));   
             
-            const response = await fetch('http://31.31.196.6:3000/api/chat/send', {
+            const response = await fetch('https://offset-pays-real-seq.trycloudflare.com/api/chat/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
