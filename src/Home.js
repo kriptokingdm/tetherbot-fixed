@@ -4,7 +4,7 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 //  serverURL
-const serverUrl = 'https://snowboard-minimum-requested-challenges.trycloudflare.com';
+const serverUrl = 'https://development-targeted-large-nicole.trycloudflare.com';
 // ......
 
 
