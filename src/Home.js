@@ -3,6 +3,11 @@ import React, { useState, useEffect } from 'react';
 import './Home.css';
 import SupportChat from './SupportChat';
 
+//  serverURL
+const serverUrl = 'https://compiled-gas-bluetooth-appointment.trycloudflare.com';
+// ......
+
+
 function Home({ navigateTo }) {
     const [isBuyMode, setIsBuyMode] = useState(true);
     const [isSwapped, setIsSwapped] = useState(false);
@@ -133,7 +138,7 @@ function Home({ navigateTo }) {
 
             console.log('🔍 Проверяем активные ордеры...');
             
-            const response = await fetch('https://tgbot-l516.onrender.com/api/user/orders', {
+            const response = await fetch(`${serverUrl}/api/user/orders`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -189,7 +194,7 @@ function Home({ navigateTo }) {
                 requestAmount = MIN_USDT;
             }
 
-            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`);
+            const response = await fetch(`${serverUrl}/api/exchange-rate?amount=${requestAmount}&type=${isBuyMode ? 'buy' : 'sell'}`);
             const data = await response.json();
             console.log('📊 Курсы с бекенда:', data);
 
@@ -473,7 +478,7 @@ function Home({ navigateTo }) {
 
             console.log('🔄 Создание заявки - данные:', exchangeData);
 
-            const response = await fetch('https://tgbot-l516.onrender.com/api/create-order', {
+            const response = await fetch(`${serverUrl}/api/create-order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
