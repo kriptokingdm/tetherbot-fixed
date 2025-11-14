@@ -22,7 +22,7 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            const serverUrl = 'https://tear-border-relate-roll.trycloudflare.com'; // НОВЫЙ URL
+            const serverUrl = 'http://31.31.196.6:3001';
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
