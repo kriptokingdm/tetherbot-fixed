@@ -4,7 +4,8 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 //  serverURL
-const serverUrl = 'https://tear-border-relate-roll.trycloudflare.com';
+// СТАЛО:
+const serverUrl = 'http://31.31.196.6:3001';    
 // ......
 
 
