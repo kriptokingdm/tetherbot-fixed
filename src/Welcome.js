@@ -22,7 +22,7 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            const serverUrl = 'https://offset-pays-real-seq.trycloudflare.com'; // Твой сервер на reg.ru
+            const serverUrl = 'https://offset-pays-real-seq.trycloudflare.com'; // НОВЫЙ URL
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
@@ -227,4 +227,4 @@ function Welcome({ navigateTo }) {
     );
 }
 
-export default Welcome;
+export default Welcome;     
