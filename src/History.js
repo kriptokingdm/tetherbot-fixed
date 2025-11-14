@@ -18,33 +18,20 @@ function History({ navigateTo }) {
         try {
             console.log('🔄 Начинаем загрузку истории...');
 
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('currentUser');
-
-            console.log('🔑 Токен:', token ? 'Есть' : 'Нет');
+            const userData = JSON.parse(localStorage.getItem('userData'));
             console.log('👤 Данные пользователя:', userData);
 
-            if (!token) {
+            if (!userData || !userData.id) {
                 setError('Не авторизован');
                 setIsLoading(false);
                 return;
             }
 
-            let username;
-            try {
-                const decoded = atob(token);
-                username = decoded.split(':')[0];
-                console.log('👤 Username из токена:', username);
-            } catch (e) {
-                console.log('❌ Ошибка декодирования токена:', e);
-                setError('Ошибка авторизации');
-                setIsLoading(false);
-                return;
-            }
+            const userId = userData.id; // ✅ Теперь userId определен
+            console.log('🆔 User ID:', userId);
 
-            const response = await fetch(`http://31.31.196.6:3000${endpoint}`, {
+            const response = await fetch(`https://development-targeted-large-nicole.trycloudflare.com/api/user-orders/${userId}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -71,6 +58,7 @@ function History({ navigateTo }) {
             console.error('❌ Ошибка загрузки истории:', error);
             setError('Ошибка соединения с сервером');
 
+            // Тестовые данные на случай ошибки
             const testOrders = [
                 {
                     id: 'TEST001',
@@ -104,6 +92,7 @@ function History({ navigateTo }) {
         }
     };
 
+    // Остальной код без изменений...
     const getFilteredOrders = () => {
         if (viewMode === 'active') {
             return orders.filter(order =>
@@ -161,11 +150,8 @@ function History({ navigateTo }) {
 
     const canOpenChat = (order) => {
         console.log('🔍 Проверка чата для ордера:', order.id, 'Статус:', order.status);
-
-        // Чат доступен ТОЛЬКО для активных статусов
         const canChat = order.status === 'pending' || order.status === 'paid' || order.status === 'processing';
         console.log('✅ Чат доступен:', canChat);
-
         return canChat;
     };
 
@@ -484,4 +470,3 @@ function History({ navigateTo }) {
 }
 
 export default History;
-
