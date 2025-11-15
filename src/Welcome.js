@@ -9,57 +9,58 @@ function Welcome({ navigateTo }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(true); // true = логин, false = регистрация
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-        if (!username.trim() || !password.trim()) {
-            setError('Заполните все поля');
-            setIsLoading(false);
-            return;
+    if (!username.trim() || !password.trim()) {
+        setError('Заполните все поля');
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+        const endpoint = isLogin ? '/api/login' : '/api/register';
+
+        console.log('🔄 Отправка запроса на:', endpoint);
+        console.log('🔄 Пытаюсь подключиться к:', `https://api.tetherbot.ru:3443${endpoint}`);
+
+        // ИСПРАВЛЕННАЯ СТРОКА - используем HTTPS и порт 3443
+        const response = await fetch(`https://api.tetherbot.ru:3443${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username.trim(),
+                password: password.trim(),
+                email: isLogin ? undefined : `${username.trim()}@tetherbot.com`
+            })
+        });
+
+        const data = await response.json();
+        console.log('📡 Ответ сервера:', data);
+
+        if (data.success) {
+            console.log('✅ Успешная авторизация:', data.user);
+
+            // Сохраняем в localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            localStorage.setItem('isLoggedIn', 'true');
+
+            navigateTo('home');
+        } else {
+            setError(data.error || 'Ошибка авторизации');
         }
-
-        try {
-            const endpoint = isLogin ? '/api/login' : '/api/register';
-
-            console.log('🔄 Отправка запроса на:', endpoint);
-
-            // Строка ~20:
-            const response = await fetch(`http://31.31.196.6:3000${endpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: username.trim(),
-                    password: password.trim(),
-                    email: isLogin ? undefined : `${username.trim()}@tetherbot.com`
-                })
-            });
-
-            const data = await response.json();
-            console.log('📡 Ответ сервера:', data);
-
-            if (data.success) {
-                console.log('✅ Успешная авторизация:', data.user);
-
-                // Сохраняем в localStorage
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('currentUser', JSON.stringify(data.user));
-                localStorage.setItem('isLoggedIn', 'true');
-
-                navigateTo('home');
-            } else {
-                setError(data.error || 'Ошибка авторизации');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка:', error);
-            setError('Ошибка соединения с сервером');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        setError('Ошибка соединения с сервером');
+    } finally {
+        setIsLoading(false);
+    }
+};
 
     return (
         <div className="welcome-container">
@@ -91,7 +92,6 @@ function Welcome({ navigateTo }) {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    console.log('🔄 Пытаюсь подключиться к:', `http://31.31.196.6:3000${endpoint}`);
                     <div style={{ marginBottom: '20px', textAlign: 'left' }}>
                         <label style={{
                             display: 'block',
