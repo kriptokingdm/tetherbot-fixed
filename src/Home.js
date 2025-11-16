@@ -4,8 +4,7 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 // serverURL - ИСПРАВЛЕННАЯ ВЕРСИЯ
-// Используем relative URLs - Vercel будет проксировать к API folder
-const serverUrl = '';
+const serverUrl = 'http://31.31.196.6:3003';
 
 function Home({ navigateTo }) {
     const [isBuyMode, setIsBuyMode] = useState(true);
