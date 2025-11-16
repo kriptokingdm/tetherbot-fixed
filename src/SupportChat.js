@@ -2,273 +2,220 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './SupportChat.css';
 
-function SupportChat({ orderId, onClose, exchangeData }) {
+const SupportChat = ({ orderId, onClose, exchangeData }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
-    const [chatAvailable, setChatAvailable] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
     const messagesEndRef = useRef(null);
 
-    // Функция для плавного закрытия
-    const handleClose = () => {
-        setIsClosing(true);
-        setTimeout(() => {
-            onClose();
-        }, 200);
-    };
+    const serverUrl = 'https://thinkpad-predictions-viking-geek.trycloudflare.com';
 
-    // Автоматическая прокрутка к новым сообщениям
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    useEffect(() => {
+        console.log('💬 SupportChat mounted for order:', orderId);
+        loadChatMessages();
+        startPolling();
+        return () => stopPolling();
+    }, [orderId]);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    // Загрузка истории чата и проверка доступности
-    useEffect(() => {
-        console.log('💬 SupportChat mounted for order:', orderId);
-        checkChatAvailability();
-        loadChatHistory();
+    let pollingInterval;
 
-        // Авто-обновление чата каждые 3 секунды
-        const interval = setInterval(() => {
-            loadChatHistory();
-        }, 3000);
+    const startPolling = () => {
+        pollingInterval = setInterval(loadChatMessages, 3000);
+    };
 
-        return () => clearInterval(interval);
-    }, [orderId]);
-
-    // Проверка доступности чата
-    const checkChatAvailability = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВИТЬ
-            
-            if (!userData || !userData.id) {
-                console.error('❌ Нет данных пользователя');
-                return;
-            }
-
-            const response = await fetch(`https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user-orders/${userData.id}`, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                const currentOrder = data.orders.find(order => order.id === orderId);
-                
-                if (currentOrder) {
-                    const isAvailable = currentOrder.status === 'pending' || 
-                                      currentOrder.status === 'paid' || 
-                                      currentOrder.status === 'processing';
-                    setChatAvailable(isAvailable);
-                    
-                    if (!isAvailable) {
-                        console.log('❌ Чат недоступен, статус:', currentOrder.status);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('❌ Ошибка проверки доступности чата:', error);
+    const stopPolling = () => {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
         }
     };
 
-    // Загрузка истории чата
-    const loadChatHistory = async () => {
+    const loadChatMessages = async () => {
         try {
-            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВИТЬ
-            
-            if (!userData || !userData.id) {
-                console.error('❌ Нет данных пользователя для загрузки чата');
-                return;
-            }
-
-            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/chat/messages/${userData.id}`, {
+            console.log('🔄 Loading chat messages for order:', orderId);
+            const response = await fetch(`${serverUrl}/api/chat/messages/${orderId}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            
-            if (response.ok) {
-                const data = await response.json();
-                
-                if (data.messages && Array.isArray(data.messages)) {
-                    setMessages(data.messages);
-                } else {
-                    setMessages([]);
-                }
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('📨 Chat messages loaded:', data);
+
+            if (data.success) {
+                setMessages(data.messages || []);
+                setError('');
+            } else {
+                setError(data.error || 'Failed to load messages');
             }
         } catch (error) {
             console.error('❌ Ошибка загрузки чата:', error);
+            setError('Connection error');
+            
+            // Demo messages for testing
+            if (messages.length === 0) {
+                setMessages([
+                    {
+                        id: 1,
+                        text: '✅ Заявка создана успешно! Ожидайте подтверждения оплаты.',
+                        sender: 'support',
+                        timestamp: new Date().toISOString()
+                    }
+                ]);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    // Отправка сообщения пользователем
-    const handleSendMessage = async () => {
+    const sendMessage = async () => {
         if (!newMessage.trim()) return;
 
-        // Проверяем доступность чата перед отправкой
-        if (!chatAvailable) {
-            alert('❌ Чат недоступен для завершенных или отмененных заявок');
-            return;
-        }
-
-        const userMessage = {
-            id: Date.now(),
-            text: newMessage,
-            type: 'user',
-            timestamp: new Date().toISOString()
+        const messageToSend = {
+            orderId: orderId,
+            message: newMessage.trim(),
+            sender: 'user'
         };
 
-        // Оптимистичное обновление UI
-        setMessages(prev => [...prev, userMessage]);
-        setNewMessage('');
-        setIsLoading(true);
-
         try {
-            const userData = JSON.parse(localStorage.getItem('currentUser'));   
-            
-            const response = await fetch('https://tear-border-relate-roll.trycloudflare.com/api/chat/send', {
+            console.log('📤 Sending message:', messageToSend);
+            const response = await fetch(`${serverUrl}/api/chat/send`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    userId: userData.id,
-                    message: newMessage,
-                    username: userData.username
-                })
+                body: JSON.stringify(messageToSend)
             });
 
-            if (response.ok) {
-                console.log('✅ Сообщение пользователя отправлено');
-                setIsLoading(false);
-                // Обновляем историю
-                loadChatHistory();
-            } else {
-                console.error('❌ Ошибка отправки сообщения');
-                setIsLoading(false);
-                // Удаляем сообщение из UI если ошибка
-                setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('✅ Message sent:', data);
+
+            if (data.success) {
+                setNewMessage('');
+                // Reload messages to get the new one
+                loadChatMessages();
             }
         } catch (error) {
-            console.error('❌ Ошибка отправки сообщения:', error);
-            setIsLoading(false);
-            // Удаляем сообщение из UI если ошибка
-            setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
+            console.error('❌ Error sending message:', error);
+            alert('Ошибка отправки сообщения');
         }
+    };
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSendMessage();
+            sendMessage();
         }
     };
 
-    const openTelegram = () => {
-        window.open('https://t.me/tetherbot_support', '_blank');
-    };
-
-    // Функция для форматирования сообщений
-    const formatMessage = (message) => {
-        return (
-            <div className="message-content">
-                <div className="message-text">
-                    {message.message || message.text}
-                </div>
-                <div className="message-time">
-                    {new Date(message.timestamp).toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                    })}
-                </div>
-            </div>
-        );
+    const formatTime = (timestamp) => {
+        return new Date(timestamp).toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     return (
-        <div className={`support-chat-overlay ${isClosing ? 'closing' : ''}`}>
-            <div className="support-chat">
-                {/* Заголовок чата */}
+        <div className="support-chat-overlay">
+            <div className="support-chat-container">
+                {/* Header */}
                 <div className="chat-header">
                     <div className="chat-header-info">
-                        <h3>💬 Поддержка по заявке #{orderId}</h3>
-                        <span className="chat-status">
-                            {chatAvailable ? '🟢 Чат активен' : '🔴 Чат завершен'}
-                        </span>
+                        <h3>💬 Чат поддержки</h3>
+                        <div className="order-info">
+                            <span className="order-id">Заявка: #{orderId}</span>
+                            {exchangeData && (
+                                <span className="order-details">
+                                    {exchangeData.type === 'buy' ? 'Покупка' : 'Продажа'} {exchangeData.amount} {exchangeData.type === 'buy' ? 'RUB' : 'USDT'}
+                                </span>
+                            )}
+                        </div>
                     </div>
-                    <button className="close-chat" onClick={handleClose}>
+                    <button className="close-chat-btn" onClick={onClose}>
                         ✕
                     </button>
                 </div>
 
-                {/* Баннер если чат недоступен */}
-                {!chatAvailable && (
-                    <div className="chat-unavailable-banner">
-                        <div className="unavailable-icon">🔒</div>
-                        <div className="unavailable-text">
-                            <strong>Чат недоступен</strong>
-                            <span>Заявка завершена или отменена</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Сообщения */}
+                {/* Messages */}
                 <div className="chat-messages">
-                    {messages.map((msg) => (
-                        <div key={msg.id} className={`message ${msg.type}`}>
-                            {formatMessage(msg)}
+                    {isLoading ? (
+                        <div className="loading-messages">
+                            <div className="loading-spinner">⏳</div>
+                            <p>Загрузка сообщений...</p>
                         </div>
-                    ))}
-                    
+                    ) : error ? (
+                        <div className="error-message">
+                            <p>⚠️ {error}</p>
+                            <button onClick={loadChatMessages}>Повторить</button>
+                        </div>
+                    ) : messages.length === 0 ? (
+                        <div className="no-messages">
+                            <p>Нет сообщений</p>
+                            <p>Начните общение с поддержкой</p>
+                        </div>
+                    ) : (
+                        messages.map((message) => (
+                            <div
+                                key={message.id}
+                                className={`message ${message.sender === 'user' ? 'user-message' : 'support-message'}`}
+                            >
+                                <div className="message-content">
+                                    <div className="message-text">{message.text}</div>
+                                    <div className="message-time">
+                                        {formatTime(message.timestamp)}
+                                    </div>
+                                </div>
+                                <div className="message-sender">
+                                    {message.sender === 'user' ? '👤 Вы' : '🛟 Поддержка'}
+                                </div>
+                            </div>
+                        ))
+                    )}
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Ввод сообщения (только если чат доступен) */}
-                {chatAvailable ? (
-                    <div className="chat-input-container">
-                        <div className="chat-input">
-                            <textarea
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Введите ваше сообщение..."
-                                rows="1"
-                                disabled={isLoading}
-                            />
-                            <button 
-                                onClick={handleSendMessage}
-                                disabled={!newMessage.trim() || isLoading}
-                                className="send-button"
-                            >
-                                {isLoading ? '⏳' : '📤'}
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="chat-disabled-message">
-                        <p>💬 Чат доступен только для активных заявок</p>
-                        <button onClick={openTelegram} className="telegram-button">
-                            💬 Написать в Telegram для помощи
+                {/* Input */}
+                <div className="chat-input-container">
+                    <div className="chat-input-wrapper">
+                        <textarea
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="Введите сообщение..."
+                            className="chat-input"
+                            rows="1"
+                        />
+                        <button
+                            onClick={sendMessage}
+                            disabled={!newMessage.trim()}
+                            className="send-button"
+                        >
+                            📤
                         </button>
                     </div>
-                )}
-
-                {/* Альтернатива Telegram */}
-                <div className="chat-alternative">
-                    <button onClick={openTelegram} className="telegram-button">
-                        💬 Написать в Telegram для быстрой помощи
-                    </button>
+                    <div className="chat-hint">
+                        Нажмите Enter для отправки, Shift+Enter для новой строки
+                    </div>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default SupportChat;
