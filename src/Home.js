@@ -4,7 +4,7 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 // serverURL - ИСПРАВЛЕННАЯ ВЕРСИЯ
-const serverUrl = 'https://completed-upper-ease-cir.trycloudflare.com';
+const serverUrl = 'https://thinkpad-predictions-viking-geek.trycloudflare.com';
 
 function Home({ navigateTo }) {
     const [isBuyMode, setIsBuyMode] = useState(true);

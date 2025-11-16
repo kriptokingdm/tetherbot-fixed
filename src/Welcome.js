@@ -24,7 +24,7 @@ function Welcome({ navigateTo }) {
             const endpoint = isLogin ? '/api/login' : '/api/register';
             // ДОЛЖНО БЫТЬ:
            // Временное решение - используем IP вместо домена
-const serverUrl = 'https://completed-upper-ease-cir.trycloudflare.com';
+const serverUrl = 'https://thinkpad-predictions-viking-geek.trycloudflare.com';
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 

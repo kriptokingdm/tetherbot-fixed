@@ -12,85 +12,85 @@ function Profile({ navigateTo }) {
     }, []);
 
     const fetchUserData = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
-            if (!token || !currentUser) {
-                throw new Error('No token found');
-            }
+    try {
+        const token = localStorage.getItem('token');
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!token || !currentUser) {
+            throw new Error('No token found');
+        }
 
-            console.log('🔄 Загрузка данных пользователя...');
-            
-            // Загружаем основные данные пользователя
-            const userResponse = await fetch('`http://31.31.196.6:3000/api/user', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!userResponse.ok) {
-                throw new Error(`HTTP ${userResponse.status}`);
+        console.log('🔄 Загрузка данных пользователя...');
+        
+        // Загружаем основные данные пользователя
+        const userResponse = await fetch('https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user/profile', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
-            
-            const userDataResult = await userResponse.json();
-            
-            // Загружаем реальную статистику
-            const statsResponse = await fetch(`http://31.31.196.6:3000/api/user/stats/${currentUser.id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            let statsData = { stats: {} };
-            if (statsResponse.ok) {
-                statsData = await statsResponse.json();
+        });
+        
+        if (!userResponse.ok) {
+            throw new Error(`HTTP ${userResponse.status}`);
+        }
+        
+        const userDataResult = await userResponse.json();
+        
+        // Загружаем реальную статистику
+        const statsResponse = await fetch(`https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user/stats/${currentUser.id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
+        });
+        
+        let statsData = { stats: {} };
+        if (statsResponse.ok) {
+            statsData = await statsResponse.json();
+        }
 
-            // Объединяем данные
-            const completeUserData = {
-                ...userDataResult.user,
-                stats: statsData.stats || { 
+        // Объединяем данные
+        const completeUserData = {
+            ...userDataResult.user,
+            stats: statsData.stats || { 
+                totalVolume: 0, 
+                totalTrades: 0, 
+                successRate: 0 
+            },
+            fromStorage: false
+        };
+
+        console.log('✅ Данные пользователя:', completeUserData);
+        setUserData(completeUserData);
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('currentUser', JSON.stringify(completeUserData));
+        
+    } catch (error) {
+        console.error('❌ Ошибка загрузки данных:', error);
+        setError('Ошибка загрузки данных');
+        
+        // Пробуем взять данные из localStorage
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            console.log('⚠️ Использую данные из localStorage');
+            const userFromStorage = JSON.parse(savedUser);
+            // Добавляем недостающие поля
+            const userWithDefaults = {
+                ...userFromStorage,
+                stats: userFromStorage.stats || { 
                     totalVolume: 0, 
                     totalTrades: 0, 
                     successRate: 0 
                 },
-                fromStorage: false
+                fromStorage: true
             };
-
-            console.log('✅ Данные пользователя:', completeUserData);
-            setUserData(completeUserData);
-            
-            // Сохраняем в localStorage
-            localStorage.setItem('currentUser', JSON.stringify(completeUserData));
-            
-        } catch (error) {
-            console.error('❌ Ошибка загрузки данных:', error);
-            setError('Ошибка загрузки данных');
-            
-            // Пробуем взять данные из localStorage
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                console.log('⚠️ Использую данные из localStorage');
-                const userFromStorage = JSON.parse(savedUser);
-                // Добавляем недостающие поля
-                const userWithDefaults = {
-                    ...userFromStorage,
-                    stats: userFromStorage.stats || { 
-                        totalVolume: 0, 
-                        totalTrades: 0, 
-                        successRate: 0 
-                    },
-                    fromStorage: true
-                };
-                setUserData(userWithDefaults);
-            }
-        } finally {
-            setIsLoading(false);
+            setUserData(userWithDefaults);
         }
-    };
+    } finally {
+        setIsLoading(false);
+    }
+};
 
     const handleLogout = () => {
         console.log('🚪 Выход из системы');

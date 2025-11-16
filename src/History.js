@@ -30,8 +30,8 @@ function History({ navigateTo }) {
         const userId = userData.id;
         console.log('🆔 User ID:', userId);
 
-        // ИСПРАВЛЕННАЯ СТРОКА - используем правильный URL
-        const response = await fetch(`https://completed-upper-ease-cir.trycloudflare.com/api/user-orders/${userId}`, {
+        // ИСПРАВЛЕННАЯ СТРОКА - используем новый URL
+        const response = await fetch(`https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user-orders/${userId}`, {
             headers: {
                 'Content-Type': 'application/json'
             }
