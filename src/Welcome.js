@@ -23,7 +23,8 @@ function Welcome({ navigateTo }) {
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
             // ДОЛЖНО БЫТЬ:
-            const serverUrl = 'https://api.tetherbot.ru:3443';
+           // Временное решение - используем IP вместо домена
+const serverUrl = 'https://31.31.196.6:3443';
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
