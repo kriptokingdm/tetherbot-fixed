@@ -24,7 +24,7 @@ function Welcome({ navigateTo }) {
             const endpoint = isLogin ? '/api/login' : '/api/register';
             // ДОЛЖНО БЫТЬ:
            // Временное решение - используем IP вместо домена
-const serverUrl = 'https://31.31.196.6:3443';
+const serverUrl = 'http://31.31.196.6:3001';
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
