@@ -52,7 +52,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
                 return;
             }
 
-            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/user-orders/${userData.id}`, {
+            const response = await fetch(`https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user-orders/${userData.id}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
