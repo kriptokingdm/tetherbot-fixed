@@ -15,82 +15,83 @@ function History({ navigateTo }) {
     }, []);
 
     const fetchUserOrders = async () => {
-        try {
-            console.log('🔄 Начинаем загрузку истории...');
-    
-            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВЛЕНО
-            console.log('👤 Данные пользователя:', userData);
-    
-            if (!userData || !userData.id) {
-                setError('Не авторизован');
-                setIsLoading(false);
-                return;
-            }
-    
-            const userId = userData.id;
-            console.log('🆔 User ID:', userId);
-    
-            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/user-orders/${userId}`, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+    try {
+        console.log('🔄 Начинаем загрузку истории...');
 
-            console.log('📡 Ответ сервера:', response.status);
+        const userData = JSON.parse(localStorage.getItem('currentUser'));
+        console.log('👤 Данные пользователя:', userData);
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('📦 Данные с сервера:', data);
-
-            if (data.success) {
-                const sortedOrders = (data.orders || []).sort((a, b) =>
-                    new Date(b.createdAt) - new Date(a.createdAt)
-                );
-                console.log('✅ Отсортированные ордера:', sortedOrders);
-                setOrders(sortedOrders);
-            } else {
-                setError(data.error || 'Ошибка загрузки');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка загрузки истории:', error);
-            setError('Ошибка соединения с сервером');
-
-            // Тестовые данные на случай ошибки
-            const testOrders = [
-                {
-                    id: 'TEST001',
-                    type: 'buy',
-                    amount: 5000,
-                    rate: 92.5,
-                    status: 'completed',
-                    createdAt: new Date().toISOString(),
-                    completedAt: new Date().toISOString(),
-                    cryptoAddress: {
-                        network: 'TRC20',
-                        address: 'TEst12345678901234567890'
-                    }
-                },
-                {
-                    id: 'TEST002',
-                    type: 'sell',
-                    amount: 100,
-                    rate: 87.5,
-                    status: 'pending',
-                    createdAt: new Date(Date.now() - 3600000).toISOString(),
-                    paymentMethod: {
-                        name: 'Сбербанк',
-                        number: '1234'
-                    }
-                }
-            ];
-            setOrders(testOrders);
-        } finally {
+        if (!userData || !userData.id) {
+            setError('Не авторизован');
             setIsLoading(false);
+            return;
         }
-    };
+
+        const userId = userData.id;
+        console.log('🆔 User ID:', userId);
+
+        // ИСПРАВЛЕННАЯ СТРОКА - используем правильный URL
+        const response = await fetch(`https://completed-upper-ease-cir.trycloudflare.com/api/user-orders/${userId}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('📡 Ответ сервера:', response.status);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('📦 Данные с сервера:', data);
+
+        if (data.success) {
+            const sortedOrders = (data.orders || []).sort((a, b) =>
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            console.log('✅ Отсортированные ордера:', sortedOrders);
+            setOrders(sortedOrders);
+        } else {
+            setError(data.error || 'Ошибка загрузки');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка загрузки истории:', error);
+        setError('Ошибка соединения с сервером');
+
+        // Тестовые данные на случай ошибки
+        const testOrders = [
+            {
+                id: 'TEST001',
+                type: 'buy',
+                amount: 5000,
+                rate: 92.5,
+                status: 'completed',
+                createdAt: new Date().toISOString(),
+                completedAt: new Date().toISOString(),
+                cryptoAddress: {
+                    network: 'TRC20',
+                    address: 'TEst12345678901234567890'
+                }
+            },
+            {
+                id: 'TEST002',
+                type: 'sell',
+                amount: 100,
+                rate: 87.5,
+                status: 'pending',
+                createdAt: new Date(Date.now() - 3600000).toISOString(),
+                paymentMethod: {
+                    name: 'Сбербанк',
+                    number: '1234'
+                }
+            }
+        ];
+        setOrders(testOrders);
+    } finally {
+        setIsLoading(false);
+    }
+};
 
     // Остальной код без изменений...
     const getFilteredOrders = () => {
