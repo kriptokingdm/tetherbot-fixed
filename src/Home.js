@@ -4,7 +4,7 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 // serverURL - ИСПРАВЛЕННАЯ ВЕРСИЯ
-const serverUrl = 'https://thinkpad-predictions-viking-geek.trycloudflare.com';
+const serverUrl = 'https://api.tetherbot.ru:3443';
 
 function Home({ navigateTo }) {
     const [isBuyMode, setIsBuyMode] = useState(true);
