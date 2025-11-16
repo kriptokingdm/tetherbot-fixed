@@ -28,7 +28,8 @@ const serverUrl = 'http://31.31.196.6:3001';
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 
-            const response = await fetch(`${serverUrl}${endpoint}`, {
+            // Будет автоматически идти к /api/register, /api/login и т.д.
+const response = await fetch(`/api${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

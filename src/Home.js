@@ -4,7 +4,8 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 // serverURL - ИСПРАВЛЕННАЯ ВЕРСИЯ
-const serverUrl = 'https://api.tetherbot.ru:3443';
+// Используем relative URLs - Vercel будет проксировать к API folder
+const serverUrl = '';
 
 function Home({ navigateTo }) {
     const [isBuyMode, setIsBuyMode] = useState(true);
@@ -136,7 +137,8 @@ function Home({ navigateTo }) {
 
             console.log('🔍 Проверяем активные ордеры...');
             
-            const response = await fetch(`${serverUrl}/api/user/orders`, {
+           // Будет автоматически идти к /api/register, /api/login и т.д.
+const response = await fetch(`/api${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
