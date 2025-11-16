@@ -181,20 +181,18 @@ const response = await fetch(`/api${endpoint}`, {
 
     // Загрузка курсов с бекенда
     const fetchExchangeRates = async () => {
-        try {
-            let requestAmount;
-            if (amount) {
-                requestAmount = parseFloat(amount);
-            } else {
-                requestAmount = 100;
-            }
+       try {
+        let requestAmount;
+        if (amount) {
+            requestAmount = parseFloat(amount);
+        } else {
+            requestAmount = 100;
+        }
 
-            if (requestAmount < MIN_USDT) {
-                requestAmount = MIN_USDT;
-            }
-
-            const endpoint = `/api/exchange-rate?amount=${requestAmount}&type=${isBuyMode ? 'buy' : 'sell'}`;
-            const response = await fetch(`${serverUrl}${endpoint}`);
+        if (requestAmount < MIN_USDT) {
+            requestAmount = MIN_USDT;
+        }
+            const response = await fetch(`${serverUrl}/api/exchange-rate?amount=${requestAmount}&type=${isBuyMode ? 'buy' : 'sell'}`);
             const data = await response.json();
             console.log('📊 Курсы с бекенда:', data);
 
@@ -202,11 +200,9 @@ const response = await fetch(`/api${endpoint}`, {
             setSellRate(data.sell);
             setCurrentTier(data.tier);
 
-        } catch (error) {
-            console.error('❌ Ошибка загрузки курсов:', error);
-            setBuyRate(92.0);
-            setSellRate(87.0);
-        }
+        }  catch (error) {
+        console.error('❌ Ошибка загрузки курсов:', error);
+    }
     };
 
     useEffect(() => {
