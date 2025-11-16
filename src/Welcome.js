@@ -7,60 +7,56 @@ function Welcome({ navigateTo }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isLogin, setIsLogin] = useState(true); // true = логин, false = регистрация
+    const [isLogin, setIsLogin] = useState(true);
 
-   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
 
-    if (!username.trim() || !password.trim()) {
-        setError('Заполните все поля');
-        setIsLoading(false);
-        return;
-    }
-
-    try {
-        const endpoint = isLogin ? '/api/login' : '/api/register';
-
-        console.log('🔄 Отправка запроса на:', endpoint);
-        console.log('🔄 Пытаюсь подключиться к:', `https://api.tetherbot.ru:3443${endpoint}`);
-
-        // ИСПРАВЛЕННАЯ СТРОКА - используем HTTPS и порт 3443
-        const response = await fetch(`https://api.tetherbot.ru:3443${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username.trim(),
-                password: password.trim(),
-                email: isLogin ? undefined : `${username.trim()}@tetherbot.com`
-            })
-        });
-
-        const data = await response.json();
-        console.log('📡 Ответ сервера:', data);
-
-        if (data.success) {
-            console.log('✅ Успешная авторизация:', data.user);
-
-            // Сохраняем в localStorage
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
-            localStorage.setItem('isLoggedIn', 'true');
-
-            navigateTo('home');
-        } else {
-            setError(data.error || 'Ошибка авторизации');
+        if (!username.trim() || !password.trim()) {
+            setError('Заполните все поля');
+            setIsLoading(false);
+            return;
         }
-    } catch (error) {
-        console.error('❌ Ошибка:', error);
-        setError('Ошибка соединения с сервером');
-    } finally {
-        setIsLoading(false);
-    }
-};
+
+        try {
+            const endpoint = isLogin ? '/api/login' : '/api/register';
+            const serverUrl = 'http://31.31.196.6:3001';
+
+            console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
+
+            const response = await fetch(`${serverUrl}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username.trim(),
+                    password: password.trim(),
+                    email: isLogin ? undefined : `${username.trim()}@tetherbot.com`
+                })
+            });
+
+            const data = await response.json();
+            console.log('📡 Ответ сервера:', data);
+
+            if (data.success) {
+                console.log('✅ Успешная авторизация:', data.user);
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
+                localStorage.setItem('isLoggedIn', 'true');
+                navigateTo('home');
+            } else {
+                setError(data.error || 'Ошибка авторизации');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+            setError('Ошибка соединения с сервером');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="welcome-container">
@@ -116,8 +112,6 @@ function Welcome({ navigateTo }) {
                                 transition: 'border-color 0.3s',
                                 boxSizing: 'border-box'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#007cff'}
-                            onBlur={(e) => e.target.style.borderColor = '#e1e1e1'}
                             required
                         />
                     </div>
@@ -146,8 +140,6 @@ function Welcome({ navigateTo }) {
                                 transition: 'border-color 0.3s',
                                 boxSizing: 'border-box'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#007cff'}
-                            onBlur={(e) => e.target.style.borderColor = '#e1e1e1'}
                             required
                         />
                     </div>
@@ -183,14 +175,8 @@ function Welcome({ navigateTo }) {
                             transition: 'all 0.3s',
                             marginBottom: '20px'
                         }}
-                        onMouseOver={(e) => !isLoading && (e.target.style.background = '#0066cc')}
-                        onMouseOut={(e) => !isLoading && (e.target.style.background = '#007cff')}
                     >
-                        {isLoading ? (
-                            <span>⏳ Загрузка...</span>
-                        ) : (
-                            <span>{isLogin ? '🔐 Войти' : '🚀 Зарегистрироваться'}</span>
-                        )}
+                        {isLoading ? '⏳ Загрузка...' : '🔐 Войти'}
                     </button>
                 </form>
 
@@ -241,5 +227,4 @@ function Welcome({ navigateTo }) {
     );
 }
 
-export default Welcome;
-
+export default Welcome;     

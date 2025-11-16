@@ -45,9 +45,15 @@ function SupportChat({ orderId, onClose, exchangeData }) {
     const checkChatAvailability = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://31.31.196.6:3000${endpoint}`, {
+            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВИТЬ
+            
+            if (!userData || !userData.id) {
+                console.error('❌ Нет данных пользователя');
+                return;
+            }
+
+            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/user-orders/${userData.id}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -75,10 +81,15 @@ function SupportChat({ orderId, onClose, exchangeData }) {
     // Загрузка истории чата
     const loadChatHistory = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://31.31.196.6:3000${endpoint}`, {
+            const userData = JSON.parse(localStorage.getItem('currentUser')); // ← ИСПРАВИТЬ
+            
+            if (!userData || !userData.id) {
+                console.error('❌ Нет данных пользователя для загрузки чата');
+                return;
+            }
+
+            const response = await fetch(`https://tear-border-relate-roll.trycloudflare.com/api/chat/messages/${userData.id}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -120,17 +131,17 @@ function SupportChat({ orderId, onClose, exchangeData }) {
         setIsLoading(true);
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://31.31.196.6:3000/api/chat/send', {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));   
+            
+            const response = await fetch('https://tear-border-relate-roll.trycloudflare.com/api/chat/send', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    orderId,
+                    userId: userData.id,
                     message: newMessage,
-                    type: 'user'
+                    username: userData.username
                 })
             });
 
@@ -169,7 +180,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
         return (
             <div className="message-content">
                 <div className="message-text">
-                    {message.text}
+                    {message.message || message.text}
                 </div>
                 <div className="message-time">
                     {new Date(message.timestamp).toLocaleTimeString([], { 
@@ -261,4 +272,3 @@ function SupportChat({ orderId, onClose, exchangeData }) {
 }
 
 export default SupportChat;
-

@@ -1,5 +1,5 @@
 {
-  "name": "tetherbot-frontend",
+  "name": "tetherbot-fixed",
   "version": "1.0.0",
   "scripts": {
     "start": "react-scripts start",
