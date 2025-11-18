@@ -23,12 +23,12 @@ function Profile({ navigateTo }) {
         console.log('🔄 Загрузка данных пользователя...');
         
         // Загружаем основные данные пользователя
-        const userResponse = await fetch('https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user/profile', {
+        const userResponse = await fetch('https://7694da1c5c0c3160689392e5cf4002b2.serveo.net/api/user/profile', {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
-        });
+        }); 
         
         if (!userResponse.ok) {
             throw new Error(`HTTP ${userResponse.status}`);
@@ -37,7 +37,7 @@ function Profile({ navigateTo }) {
         const userDataResult = await userResponse.json();
         
         // Загружаем реальную статистику
-        const statsResponse = await fetch(`https://thinkpad-predictions-viking-geek.trycloudflare.com/api/user/stats/${currentUser.id}`, {
+        const statsResponse = await fetch(`https://7694da1c5c0c3160689392e5cf4002b2.serveo.net/api/user/stats/${currentUser.id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
