@@ -9,7 +9,9 @@ const SupportChat = ({ orderId, onClose, exchangeData }) => {
     const [error, setError] = useState('');
     const messagesEndRef = useRef(null);
 
-    const serverUrl = 'https://thinkpad-predictions-viking-geek.trycloudflare.com';
+    const serverUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001'
+    : 'https://7694da1c5c0c3160689392e5cf4002b2.serveo.net';
 
     useEffect(() => {
         console.log('💬 SupportChat mounted for order:', orderId);
