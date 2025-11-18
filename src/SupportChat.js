@@ -11,7 +11,7 @@ const SupportChat = ({ orderId, onClose, exchangeData }) => {
 
     const serverUrl = window.location.hostname === 'localhost' 
     ? 'http://localhost:3001'
-    : 'https://7694da1c5c0c3160689392e5cf4002b2.serveo.net';
+    : 'https://0799a269ae88e6f622930debdf994027.serveo.net';
 
     useEffect(() => {
         console.log('💬 SupportChat mounted for order:', orderId);

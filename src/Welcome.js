@@ -24,7 +24,7 @@ function Welcome({ navigateTo }) {
             const endpoint = isLogin ? '/api/login' : '/api/register';
             // ДОЛЖНО БЫТЬ:
            // Временное решение - используем IP вместо домена
-           const serverUrl = 'https://7694da1c5c0c3160689392e5cf4002b2.serveo.net';
+           const serverUrl = 'https://0799a269ae88e6f622930debdf994027.serveo.net';
 
             console.log('🔄 Отправка запроса на:', `${serverUrl}${endpoint}`);
 

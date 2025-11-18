@@ -148,7 +148,7 @@ function Home({ navigateTo }) {
                 
                 // ОПРЕДЕЛЯЕМ ENDPOINT
                 const endpoint = `/api/user-orders/${userId}`;
-                const serverUrl = 'https://7694da1c5c0c3160689392e5cf4002b2.serveo.net';
+                const serverUrl = 'https://0799a269ae88e6f622930debdf994027.serveo.net';
                 
                 // Будет автоматически идти к /api/user-orders/USER_ID
                 const response = await fetch(`${serverUrl}${endpoint}`, {
@@ -181,7 +181,7 @@ function Home({ navigateTo }) {
                 console.error('❌ Ошибка проверки активных ордеров:', error);
             }
         };
-        
+
         // Проверяем активные ордеры каждые 30 секунд
         useEffect(() => {
             const interval = setInterval(() => {
