@@ -4,7 +4,7 @@ import './Home.css';
 import SupportChat from './SupportChat';
 
 // serverURL - ИСПРАВЛЕННАЯ ВЕРСИЯ
-const serverUrl = 'https://7694da1c5c0c3160689392e5cf4002b2.serveo.net';
+const serverUrl = 'https://0799a269ae88e6f622930debdf994027.serveo.net';
 
 function Home({ navigateTo }) {
     const [isBuyMode, setIsBuyMode] = useState(true);
