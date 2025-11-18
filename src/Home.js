@@ -118,64 +118,78 @@ function Home({ navigateTo }) {
         fetchExchangeRates();
 
         // Глобальная функция для обновления из других компонентов
-        window.updateActiveOrders = checkActiveOrders;
+            window.updateActiveOrders = checkActiveOrders;
 
-        return () => {
-            window.updateActiveOrders = null;
-        };
-    }, []);
+            return () => {
+                window.updateActiveOrders = null;
+            };
+        }, []);
 
-    // Функция проверки активных ордеров
-    const checkActiveOrders = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.log('❌ Токен не найден');
-                return;
-            }
-
-            console.log('🔍 Проверяем активные ордеры...');
-            
-           // Будет автоматически идти к /api/register, /api/login и т.д.
-const response = await fetch(`/api${endpoint}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+        // Функция проверки активных ордеров
+        const checkActiveOrders = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('❌ Токен не найден');
+                    return;
                 }
-            });
-
-            console.log('📡 Статус ответа:', response.status);
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('📦 Данные ордеров:', data);
+        
+                // ПОЛУЧАЕМ USER ID ИЗ LOCALSTORAGE
+                const userData = localStorage.getItem('user');
+                if (!userData) {
+                    console.log('❌ Данные пользователя не найдены');
+                    return;
+                }
                 
-                const activeOrders = data.orders.filter(order =>
-                    order.status === 'pending' || order.status === 'paid' || order.status === 'processing'
-                );
-
-                console.log('🔥 Активных ордеров:', activeOrders.length);
-                console.log('📋 Все ордеры:', data.orders.map(o => ({id: o.id, status: o.status})));
-
-                setActiveOrdersCount(activeOrders.length);
-                setHasActiveOrder(activeOrders.length > 0);
-
-            } else {
-                console.error('❌ Ошибка ответа:', response.status);
+                const user = JSON.parse(userData);
+                const userId = user.id;
+        
+                console.log('🔍 Проверяем активные ордеры...');
+                
+                // ОПРЕДЕЛЯЕМ ENDPOINT
+                const endpoint = `/api/user-orders/${userId}`;
+                const serverUrl = 'https://7694da1c5c0c3160689392e5cf4002b2.serveo.net';
+                
+                // Будет автоматически идти к /api/user-orders/USER_ID
+                const response = await fetch(`${serverUrl}${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
+                console.log('📡 Статус ответа:', response.status);
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📦 Данные ордеров:', data);
+                    
+                    const activeOrders = data.orders.filter(order =>
+                        order.status === 'pending' || order.status === 'paid' || order.status === 'processing'
+                    );
+        
+                    console.log('🔥 Активных ордеров:', activeOrders.length);
+                    console.log('📋 Все ордеры:', data.orders.map(o => ({id: o.id, status: o.status})));
+        
+                    setActiveOrdersCount(activeOrders.length);
+                    setHasActiveOrder(activeOrders.length > 0);
+        
+                } else {
+                    console.error('❌ Ошибка ответа:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Ошибка проверки активных ордеров:', error);
             }
-        } catch (error) {
-            console.error('❌ Ошибка проверки активных ордеров:', error);
-        }
-    };
+        };
+        
+        // Проверяем активные ордеры каждые 30 секунд
+        useEffect(() => {
+            const interval = setInterval(() => {
+                checkActiveOrders();
+            }, 30000);
 
-    // Проверяем активные ордеры каждые 30 секунд
-    useEffect(() => {
-        const interval = setInterval(() => {
-            checkActiveOrders();
-        }, 30000);
-
-        return () => {
-            clearInterval(interval);
+            return () => {
+                clearInterval(interval);
         };
     }, []);
 
